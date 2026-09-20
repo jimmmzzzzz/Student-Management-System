@@ -13,7 +13,9 @@ public class StudentService {
     }
 
     public boolean registerStudent(String firstName, String lastName, String email, String major, double gpa) {
-        if (!isValidEmail(email) || !isValidGpa(gpa) || firstName.isBlank() || lastName.isBlank()) {
+        if (firstName == null || lastName == null || major == null
+                || firstName.isBlank() || lastName.isBlank() || major.isBlank()
+                || !isValidEmail(email) || !isValidGpa(gpa)) {
             return false;
         }
         return studentDao.addStudent(new Student(firstName.trim(), lastName.trim(), email.trim(), major.trim(), gpa));
