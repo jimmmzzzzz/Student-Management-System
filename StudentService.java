@@ -22,6 +22,28 @@ public class StudentService {
     }
 
     public boolean updateStudentDetails(int id, String firstName, String lastName, String email, String major, String gpaStr) {
+        if (firstName == null || lastName == null || email == null || major == null || gpaStr == null) {
+            return false;
+        }
+
+        String trimmedEmail = email.trim();
+        if (!trimmedEmail.isEmpty() && !isValidEmail(trimmedEmail)) {
+            return false;
+        }
+
+        Double parsedGpa = null;
+        String trimmedGpa = gpaStr.trim();
+        if (!trimmedGpa.isEmpty()) {
+            try {
+                parsedGpa = Double.parseDouble(trimmedGpa);
+            } catch (NumberFormatException e) {
+                return false;
+            }
+            if (!isValidGpa(parsedGpa)) {
+                return false;
+            }
+        }
+
         Optional<Student> existingOpt = studentDao.getStudentById(id);
         if (existingOpt.isEmpty()) return false;
 
@@ -29,14 +51,9 @@ public class StudentService {
 
         if (!firstName.isBlank()) s.setFirstName(firstName.trim());
         if (!lastName.isBlank()) s.setLastName(lastName.trim());
-        if (!email.isBlank() && isValidEmail(email)) s.setEmail(email.trim());
+        if (!trimmedEmail.isEmpty()) s.setEmail(trimmedEmail);
         if (!major.isBlank()) s.setMajor(major.trim());
-        if (!gpaStr.isBlank()) {
-            try {
-                double gpa = Double.parseDouble(gpaStr.trim());
-                if (isValidGpa(gpa)) s.setGpa(gpa);
-            } catch (NumberFormatException ignored) {}
-        }
+        if (parsedGpa != null) s.setGpa(parsedGpa);
 
         return studentDao.updateStudent(s);
     }
