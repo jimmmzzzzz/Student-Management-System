@@ -13,12 +13,18 @@ public class StudentService {
     }
 
     public boolean registerStudent(String firstName, String lastName, String email, String major, double gpa) {
-        if (firstName == null || lastName == null || major == null
+        if (firstName == null || lastName == null || email == null || major == null
                 || firstName.isBlank() || lastName.isBlank() || major.isBlank()
-                || !isValidEmail(email) || !isValidGpa(gpa)) {
+                || !isValidGpa(gpa)) {
             return false;
         }
-        return studentDao.addStudent(new Student(firstName.trim(), lastName.trim(), email.trim(), major.trim(), gpa));
+
+        String trimmedEmail = email.trim();
+        if (!isValidEmail(trimmedEmail)) {
+            return false;
+        }
+
+        return studentDao.addStudent(new Student(firstName.trim(), lastName.trim(), trimmedEmail, major.trim(), gpa));
     }
 
     public boolean updateStudentDetails(int id, String firstName, String lastName, String email, String major, String gpaStr) {
